@@ -78,7 +78,7 @@ export default function App() {
 
   if (!ready) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center" role="status" aria-live="polite">
         <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
         <p className="text-slate-500 font-medium animate-pulse">Loading your workspace...</p>
       </div>
@@ -113,7 +113,9 @@ export default function App() {
                 <p className="text-slate-600 text-lg">Paste an article, book chapter, or your notes below. The AI will generate plain-language concepts, flashcards, and a quiz.</p>
               </div>
               <div className="relative mt-8">
+                <label htmlFor="source-text" className="sr-only">Study material</label>
                 <textarea
+                  id="source-text"
                   value={sourceText}
                   onChange={handleTextChange}
                   placeholder="Paste your study material here..."
@@ -166,7 +168,7 @@ export default function App() {
         )}
 
         {status === "loading" && (
-          <div className="flex flex-col items-center justify-center py-32 animate-fade-in">
+          <div className="flex flex-col items-center justify-center py-32 animate-fade-in" role="status" aria-live="polite">
             <div className="relative">
               <div className="w-20 h-20 border-4 border-indigo-100 rounded-full"></div>
               <div className="w-20 h-20 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
@@ -178,35 +180,51 @@ export default function App() {
 
         {status === "ready" && learningData && (
           <div className="animate-fade-in">
-            <div className="flex justify-start gap-2 mb-10 border-b border-slate-200 overflow-x-auto hide-scrollbar pb-px">
+            <div className="flex justify-start gap-2 mb-10 border-b border-slate-200 overflow-x-auto hide-scrollbar pb-px" role="tablist" aria-label="Study guide sections">
               <button
+                id="tab-concepts"
+                role="tab"
+                aria-selected={activeTab === 'concepts'}
+                aria-controls="panel-concepts"
                 onClick={() => handleTabClick('concepts')}
-                className={`px-6 py-3.5 font-bold rounded-t-xl flex items-center gap-3 transition-colors text-[15px] focus:outline-none ${activeTab === 'concepts' ? 'bg-indigo-50 text-indigo-700 border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
+                className={`px-6 py-3.5 font-bold rounded-t-xl flex items-center gap-3 transition-colors text-[15px] focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${activeTab === 'concepts' ? 'bg-indigo-50 text-indigo-700 border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
               >
-                <i className="fas fa-book-open"></i> Learn Concepts
+                <i className="fas fa-book-open" aria-hidden="true"></i> Learn Concepts
               </button>
               <button
+                id="tab-flashcards"
+                role="tab"
+                aria-selected={activeTab === 'flashcards'}
+                aria-controls="panel-flashcards"
                 onClick={() => handleTabClick('flashcards')}
-                className={`px-6 py-3.5 font-bold rounded-t-xl flex items-center gap-3 transition-colors text-[15px] focus:outline-none ${activeTab === 'flashcards' ? 'bg-indigo-50 text-indigo-700 border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
+                className={`px-6 py-3.5 font-bold rounded-t-xl flex items-center gap-3 transition-colors text-[15px] focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${activeTab === 'flashcards' ? 'bg-indigo-50 text-indigo-700 border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
               >
-                <i className="fas fa-layer-group"></i> Flashcards
+                <i className="fas fa-layer-group" aria-hidden="true"></i> Flashcards
               </button>
               <button
+                id="tab-quiz"
+                role="tab"
+                aria-selected={activeTab === 'quiz'}
+                aria-controls="panel-quiz"
                 onClick={() => handleTabClick('quiz')}
-                className={`px-6 py-3.5 font-bold rounded-t-xl flex items-center gap-3 transition-colors text-[15px] focus:outline-none ${activeTab === 'quiz' ? 'bg-indigo-50 text-indigo-700 border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
+                className={`px-6 py-3.5 font-bold rounded-t-xl flex items-center gap-3 transition-colors text-[15px] focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${activeTab === 'quiz' ? 'bg-indigo-50 text-indigo-700 border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
               >
-                <i className="fas fa-check-circle"></i> Take Quiz
+                <i className="fas fa-check-circle" aria-hidden="true"></i> Take Quiz
               </button>
               <button
+                id="tab-history"
+                role="tab"
+                aria-selected={activeTab === 'history'}
+                aria-controls="panel-history"
                 onClick={() => handleTabClick('history')}
-                className={`px-6 py-3.5 font-bold rounded-t-xl flex items-center gap-3 transition-colors text-[15px] focus:outline-none ${activeTab === 'history' ? 'bg-indigo-50 text-indigo-700 border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
+                className={`px-6 py-3.5 font-bold rounded-t-xl flex items-center gap-3 transition-colors text-[15px] focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${activeTab === 'history' ? 'bg-indigo-50 text-indigo-700 border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
               >
-                <i className="fas fa-history"></i> History
+                <i className="fas fa-history" aria-hidden="true"></i> History
               </button>
             </div>
 
             <Suspense fallback={<div className="py-20 text-center text-slate-400">Loading…</div>}>
-              <div>
+              <div id="panel-concepts" role="tabpanel" aria-labelledby="tab-concepts">
                 {activeTab === 'concepts' && <ConceptsView key={guideKey} data={learningData} sourceText={sourceText} />}
                 {activeTab === 'flashcards' && <FlashcardsView key={guideKey} data={learningData} />}
                 {activeTab === 'quiz' && <QuizView key={guideKey} data={learningData} />}
