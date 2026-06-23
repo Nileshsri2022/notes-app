@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, memo } from 'react'
 
-export default function FlashcardsView({ data }) {
+function FlashcardsView({ data }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -32,3 +32,5 @@ export default function FlashcardsView({ data }) {
     </div>
   );
 }
+
+export default memo(FlashcardsView)

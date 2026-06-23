@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, memo } from 'react'
 
-export default function QuizView({ data }) {
+function QuizView({ data }) {
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
@@ -76,3 +76,5 @@ export default function QuizView({ data }) {
     </div>
   );
 }
+
+export default memo(QuizView)

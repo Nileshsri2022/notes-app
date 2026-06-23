@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import Markdown from './Markdown.jsx'
 
-export default function ConceptsView({ data, sourceText }) {
+function ConceptsView({ data, sourceText }) {
   const [isSourceOpen, setIsSourceOpen] = useState(false)
   return (
     <div className="space-y-8 animate-fade-in">
@@ -45,3 +45,5 @@ export default function ConceptsView({ data, sourceText }) {
     </div>
   )
 }
+
+export default memo(ConceptsView)

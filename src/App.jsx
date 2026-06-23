@@ -1,13 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, lazy, Suspense, useCallback } from 'react'
 import { useAuth } from './hooks/useAuth.js'
 import { useSession } from './hooks/useSession.js'
 import { addHistory } from './lib/store.js'
 import { generateGuide } from './lib/api.js'
-import ConceptsView from './components/ConceptsView.jsx'
-import FlashcardsView from './components/FlashcardsView.jsx'
-import QuizView from './components/QuizView.jsx'
-import HistoryView from './components/HistoryView.jsx'
-import ChatBot from './components/ChatBot.jsx'
+
+// Code-split the tab views so only the active one is fetched.
+const ConceptsView = lazy(() => import('./components/ConceptsView.jsx'))
+const FlashcardsView = lazy(() => import('./components/FlashcardsView.jsx'))
+const QuizView = lazy(() => import('./components/QuizView.jsx'))
+const HistoryView = lazy(() => import('./components/HistoryView.jsx'))
+const ChatBot = lazy(() => import('./components/ChatBot.jsx'))
 
 export default function App() {
   const { user, ready } = useAuth()
@@ -32,18 +34,18 @@ export default function App() {
     })
   }, [user, restored, loadSession])
 
-  const handleTabClick = (tab) => { setActiveTab(tab); flushSession(status, sourceText, learningData, tab) }
-  const handleNewTextClick = () => {
+  const handleTabClick = useCallback((tab) => { setActiveTab(tab); flushSession(status, sourceText, learningData, tab) }, [status, sourceText, learningData, flushSession])
+  const handleNewTextClick = useCallback(() => {
     setSourceText(''); setLearningData(null); setStatus('input'); setActiveTab('concepts')
     flushSession('input', '', null, 'concepts')
-  }
-  const handleRestoreClick = (item) => {
+  }, [flushSession])
+  const handleRestoreClick = useCallback((item) => {
     setSourceText(item.sourceText); setLearningData(item.learningData); setStatus('ready'); setActiveTab('concepts')
     flushSession('ready', item.sourceText, item.learningData, 'concepts')
-  }
-  const handleTextChange = (e) => {
+  }, [flushSession])
+  const handleTextChange = useCallback((e) => {
     const text = e.target.value; setSourceText(text); saveSession(status, text, learningData, activeTab)
-  }
+  }, [status, learningData, activeTab, saveSession])
 
   const handleAnalyze = async () => {
     if (!sourceText.trim()) return
@@ -203,14 +205,16 @@ export default function App() {
               </button>
             </div>
 
-            <div>
-              {activeTab === 'concepts' && <ConceptsView key={guideKey} data={learningData} sourceText={sourceText} />}
-              {activeTab === 'flashcards' && <FlashcardsView key={guideKey} data={learningData} />}
-              {activeTab === 'quiz' && <QuizView key={guideKey} data={learningData} />}
-              {activeTab === 'history' && <HistoryView history={history} onRestore={handleRestoreClick} />}
-            </div>
+            <Suspense fallback={<div className="py-20 text-center text-slate-400">Loading…</div>}>
+              <div>
+                {activeTab === 'concepts' && <ConceptsView key={guideKey} data={learningData} sourceText={sourceText} />}
+                {activeTab === 'flashcards' && <FlashcardsView key={guideKey} data={learningData} />}
+                {activeTab === 'quiz' && <QuizView key={guideKey} data={learningData} />}
+                {activeTab === 'history' && <HistoryView history={history} onRestore={handleRestoreClick} />}
+              </div>
 
-            <ChatBot sourceText={sourceText} concepts={learningData.concepts} />
+              <ChatBot sourceText={sourceText} concepts={learningData.concepts} />
+            </Suspense>
           </div>
         )}
       </main>
