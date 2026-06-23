@@ -50,16 +50,17 @@ export default function App() {
     setStatus('loading'); setErrorMsg(''); saveSession('loading', sourceText, learningData, activeTab)
     try {
       const parsedData = await generateGuide(sourceText)
+      const stamped = { ...parsedData, createdAt: Date.now() }
       if (user) {
         await addHistory(user, {
           timestamp: new Date().toLocaleString(),
-          createdAt: Date.now(),
+          createdAt: stamped.createdAt,
           sourceText,
-          learningData: parsedData,
+          learningData: stamped,
         })
       }
-      setLearningData(parsedData); setActiveTab('concepts'); setStatus('ready')
-      await saveSession('ready', sourceText, parsedData, 'concepts')
+      setLearningData(stamped); setActiveTab('concepts'); setStatus('ready')
+      await saveSession('ready', sourceText, stamped, 'concepts')
     } catch (error) {
       console.error('Error generating content:', error)
       setErrorMsg('Failed to process the text. Please try a shorter text or check the server.')
@@ -67,6 +68,11 @@ export default function App() {
       await saveSession('input', sourceText, learningData, activeTab)
     }
   }
+
+  // When the active guide changes (generated fresh or restored from history),
+  // remount the tab views so internal state (quiz answers, flashcard index)
+  // resets instead of leaking from the previous guide.
+  const guideKey = learningData?.createdAt ?? 'fresh'
 
   if (!ready) {
     return (
@@ -198,9 +204,9 @@ export default function App() {
             </div>
 
             <div>
-              {activeTab === 'concepts' && <ConceptsView data={learningData} sourceText={sourceText} />}
-              {activeTab === 'flashcards' && <FlashcardsView data={learningData} />}
-              {activeTab === 'quiz' && <QuizView data={learningData} />}
+              {activeTab === 'concepts' && <ConceptsView key={guideKey} data={learningData} sourceText={sourceText} />}
+              {activeTab === 'flashcards' && <FlashcardsView key={guideKey} data={learningData} />}
+              {activeTab === 'quiz' && <QuizView key={guideKey} data={learningData} />}
               {activeTab === 'history' && <HistoryView history={history} onRestore={handleRestoreClick} />}
             </div>
 
