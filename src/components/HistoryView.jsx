@@ -1,4 +1,6 @@
-export default function HistoryView({ history, onRestore }) {
+import { memo } from 'react'
+
+function HistoryView({ history, onRestore }) {
   if (!history || history.length === 0) {
     return (
       <div className="text-center py-20 animate-fade-in">
@@ -31,3 +33,5 @@ export default function HistoryView({ history, onRestore }) {
     </div>
   );
 }
+
+export default memo(HistoryView)

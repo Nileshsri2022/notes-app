@@ -1,24 +1,24 @@
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import Markdown from './Markdown.jsx'
 
-export default function ConceptsView({ data, sourceText }) {
+function ConceptsView({ data, sourceText }) {
   const [isSourceOpen, setIsSourceOpen] = useState(false)
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden group">
-        <button onClick={() => setIsSourceOpen(!isSourceOpen)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors focus:outline-none">
+        <button onClick={() => setIsSourceOpen(!isSourceOpen)} aria-expanded={isSourceOpen} aria-controls="source-text-panel" className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500">
           <div className="flex items-center gap-4">
             <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isSourceOpen ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-100 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-500'}`}>
-              <i className="fas fa-file-alt"></i>
+              <i className="fas fa-file-alt" aria-hidden="true"></i>
             </div>
             <div className="text-left">
               <h3 className="font-bold text-slate-800 text-lg">Source Text</h3>
               <p className="text-sm text-slate-500">Expand to read the original formatted text</p>
             </div>
           </div>
-          <i className={`fas fa-chevron-down text-slate-400 transition-transform duration-300 ${isSourceOpen ? 'rotate-180' : ''}`}></i>
+          <i className={`fas fa-chevron-down text-slate-400 transition-transform duration-300 ${isSourceOpen ? 'rotate-180' : ''}`} aria-hidden="true"></i>
         </button>
-        <div className={`transition-all duration-500 ease-in-out origin-top ${isSourceOpen ? 'max-h-[1200px] opacity-100 border-t border-slate-100' : 'max-h-0 opacity-0 border-transparent'} overflow-hidden bg-slate-50/80`}>
+        <div id="source-text-panel" className={`transition-all duration-500 ease-in-out origin-top ${isSourceOpen ? 'max-h-[1200px] opacity-100 border-t border-slate-100' : 'max-h-0 opacity-0 border-transparent'} overflow-hidden bg-slate-50/80`}>
           <div className="p-4 sm:p-6 overflow-y-auto max-h-[800px] custom-scrollbar">
             <div className="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-xl border border-slate-200 shadow-sm font-sans">
               <Markdown text={sourceText} />
@@ -45,3 +45,5 @@ export default function ConceptsView({ data, sourceText }) {
     </div>
   )
 }
+
+export default memo(ConceptsView)

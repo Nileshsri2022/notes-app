@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, memo } from 'react'
 
-export default function QuizView({ data }) {
+function QuizView({ data }) {
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
@@ -49,11 +49,11 @@ export default function QuizView({ data }) {
                 }
 
                 return (
-                  <button key={optIndex} onClick={() => handleSelect(qIndex, optIndex)} disabled={submitted} className={btnClass}>
+                  <button key={optIndex} onClick={() => handleSelect(qIndex, optIndex)} disabled={submitted} aria-pressed={isSelected && !submitted} className={btnClass}>
                     <div className="flex items-center justify-between">
                       <span>{opt}</span>
-                      {isCorrect && <i className="fas fa-check-circle text-green-500 text-lg"></i>}
-                      {isWrong && <i className="fas fa-times-circle text-red-400 text-lg"></i>}
+                      {isCorrect && <i className="fas fa-check-circle text-green-500 text-lg" aria-hidden="true"></i>}
+                      {isWrong && <i className="fas fa-times-circle text-red-400 text-lg" aria-hidden="true"></i>}
                     </div>
                   </button>
                 );
@@ -76,3 +76,5 @@ export default function QuizView({ data }) {
     </div>
   );
 }
+
+export default memo(QuizView)

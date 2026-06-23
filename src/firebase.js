@@ -1,7 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
-import { getAnalytics, isSupported } from 'firebase/analytics'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -18,9 +17,13 @@ export const auth = getAuth(app)
 export const db = getFirestore(app)
 export const appId = import.meta.env.VITE_APP_ID || 'default-app-id'
 
-// Google Analytics: only in production builds, in a browser that supports it.
-// (Dev clicks would otherwise pollute the GA dashboard; isSupported() is false
-// in test/SSR contexts where window/document are absent.)
+// Google Analytics: lazy-loaded so it stays out of the initial bundle.
+// Only in production builds, in a browser that supports it. (Dev clicks
+// would pollute the GA dashboard; isSupported() is false in test/SSR.)
 if (import.meta.env.PROD) {
-  isSupported().then((ok) => { if (ok) getAnalytics(app) }).catch(() => {})
+  import('firebase/analytics')
+    .then(({ isSupported, getAnalytics }) =>
+      isSupported().then((ok) => { if (ok) getAnalytics(app) })
+    )
+    .catch(() => {})
 }
