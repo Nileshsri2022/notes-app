@@ -11,7 +11,7 @@ import ChatBot from './components/ChatBot.jsx'
 
 export default function App() {
   const { user, ready } = useAuth()
-  const { history, loadSession, saveSession } = useSession(user)
+  const { history, loadSession, saveSession, flushSession } = useSession(user)
   const [sourceText, setSourceText] = useState('')
   const [status, setStatus] = useState('input')
   const [learningData, setLearningData] = useState(null)
@@ -32,14 +32,14 @@ export default function App() {
     })
   }, [user, restored, loadSession])
 
-  const handleTabClick = (tab) => { setActiveTab(tab); saveSession(status, sourceText, learningData, tab) }
+  const handleTabClick = (tab) => { setActiveTab(tab); flushSession(status, sourceText, learningData, tab) }
   const handleNewTextClick = () => {
     setSourceText(''); setLearningData(null); setStatus('input'); setActiveTab('concepts')
-    saveSession('input', '', null, 'concepts')
+    flushSession('input', '', null, 'concepts')
   }
   const handleRestoreClick = (item) => {
     setSourceText(item.sourceText); setLearningData(item.learningData); setStatus('ready'); setActiveTab('concepts')
-    saveSession('ready', item.sourceText, item.learningData, 'concepts')
+    flushSession('ready', item.sourceText, item.learningData, 'concepts')
   }
   const handleTextChange = (e) => {
     const text = e.target.value; setSourceText(text); saveSession(status, text, learningData, activeTab)
@@ -47,7 +47,7 @@ export default function App() {
 
   const handleAnalyze = async () => {
     if (!sourceText.trim()) return
-    setStatus('loading'); setErrorMsg(''); saveSession('loading', sourceText, learningData, activeTab)
+    setStatus('loading'); setErrorMsg(''); flushSession('loading', sourceText, learningData, activeTab)
     try {
       const parsedData = await generateGuide(sourceText)
       const stamped = { ...parsedData, createdAt: Date.now() }
@@ -60,7 +60,7 @@ export default function App() {
         })
       }
       setLearningData(stamped); setActiveTab('concepts'); setStatus('ready')
-      await saveSession('ready', sourceText, stamped, 'concepts')
+      await flushSession('ready', sourceText, stamped, 'concepts')
     } catch (error) {
       console.error('Error generating content:', error)
       setErrorMsg('Failed to process the text. Please try a shorter text or check the server.')
