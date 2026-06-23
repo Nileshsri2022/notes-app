@@ -17,4 +17,9 @@ describe('Markdown', () => {
     const { container } = render(<Markdown text="hello **world**" />)
     expect(container.querySelector('strong')).toHaveTextContent('world')
   })
+
+  it('returns null when text is falsy', () => {
+    const { container } = render(<Markdown text={null} />)
+    expect(container.firstChild).toBeNull()
+  })
 })
