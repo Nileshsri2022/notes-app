@@ -8,7 +8,7 @@ dotenv.config({ path: resolve(__dirname, '.env') })
 import express from 'express'
 import fetch from 'node-fetch'
 
-const MODEL = 'gemini-2.5-flash-preview-09-2025:generateContent'
+const MODEL = 'gemini-2.5-flash:generateContent'
 const url = () =>
   `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}?key=${process.env.GEMINI_API_KEY}`
 
