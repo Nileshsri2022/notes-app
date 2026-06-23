@@ -22,4 +22,21 @@ describe('Markdown', () => {
     const { container } = render(<Markdown text={null} />)
     expect(container.firstChild).toBeNull()
   })
+
+  it('strips <script> tags (XSS)', () => {
+    const { container } = render(
+      <Markdown text={'hello\n<script>alert(1)</script>'} />
+    )
+    expect(container.querySelector('script')).toBeNull()
+    expect(container.textContent).toContain('hello')
+  })
+
+  it('strips event-handler attributes like onerror (XSS)', () => {
+    const { container } = render(
+      <Markdown text={'<img src="x" onerror="alert(1)">'} />
+    )
+    const img = container.querySelector('img')
+    // img may be allowed (no src policy), but the onerror handler must be gone
+    if (img) expect(img.getAttribute('onerror')).toBeNull()
+  })
 })

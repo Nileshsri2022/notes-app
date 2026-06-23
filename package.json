@@ -10,9 +10,11 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "dompurify": "^3.4.11",
     "dotenv": "^17.4.2",
     "express": "^4.19.2",
     "firebase": "^11.6.1",
+    "marked": "^18.0.5",
     "node-fetch": "^3.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
