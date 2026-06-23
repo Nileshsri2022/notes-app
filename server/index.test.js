@@ -27,7 +27,7 @@ describe('POST /api/generate', () => {
     fetch.mockResolvedValue({ ok: false, status: 500 })
     const res = await request(createApp()).post('/api/generate').send({ text: 'hello' })
     expect(res.status).toBe(500)
-  })
+  }, 15000) // all-fail path waits out intentional 3-retry backoff (~6s)
 })
 
 describe('POST /api/chat', () => {
