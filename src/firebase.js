@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
+import { getAnalytics, isSupported } from 'firebase/analytics'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -9,9 +10,17 @@ const firebaseConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 }
 
 const app = initializeApp(firebaseConfig)
 export const auth = getAuth(app)
 export const db = getFirestore(app)
 export const appId = import.meta.env.VITE_APP_ID || 'default-app-id'
+
+// Google Analytics: only in production builds, in a browser that supports it.
+// (Dev clicks would otherwise pollute the GA dashboard; isSupported() is false
+// in test/SSR contexts where window/document are absent.)
+if (import.meta.env.PROD) {
+  isSupported().then((ok) => { if (ok) getAnalytics(app) }).catch(() => {})
+}
